@@ -4,12 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Superendividamento</title>
+  
+  <!-- React CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone para JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/recharts@2.5.0/dist/Recharts.js"></script>
+  
+  <!-- Recharts CDN -->
+  <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+  
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -18,16 +36,21 @@
     const { useState, useMemo, useEffect } = React;
     const { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
 
-    // Lucide Icons Components
-    const AlertCircle = () => <i data-lucide="alert-circle"></i>;
-    const TrendingUp = () => <i data-lucide="trending-up"></i>;
-    const TrendingDown = () => <i data-lucide="trending-down"></i>;
-    const DollarSign = () => <i data-lucide="dollar-sign"></i>;
-    const UserPlus = () => <i data-lucide="user-plus"></i>;
-    const Users = () => <i data-lucide="users"></i>;
-    const Save = () => <i data-lucide="save"></i>;
-    const ArrowLeft = () => <i data-lucide="arrow-left"></i>;
-    const Trash2 = () => <i data-lucide="trash-2"></i>;
+    const Icon = ({ name, size = 24, className = "", color }) => {
+      const ref = React.useRef(null);
+      
+      React.useEffect(() => {
+        if (ref.current && window.lucide) {
+          const iconElement = window.lucide.createElement(window.lucide[name]);
+          if (iconElement) {
+            ref.current.innerHTML = '';
+            ref.current.appendChild(iconElement);
+          }
+        }
+      }, [name]);
+      
+      return <i ref={ref} className={className} style={{ width: size, height: size, display: 'inline-block', color }}></i>;
+    };
 
     const DebtDashboard = () => {
       const [currentView, setCurrentView] = useState('list');
@@ -60,12 +83,7 @@
 
       useEffect(() => {
         loadClients();
-        lucide.createIcons();
       }, []);
-
-      useEffect(() => {
-        lucide.createIcons();
-      });
 
       const loadClients = async () => {
         try {
@@ -262,7 +280,7 @@
                     }}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
                   >
-                    <UserPlus />
+                    <Icon name="UserPlus" size={20} />
                     Novo Cliente
                   </button>
                 </div>
@@ -274,8 +292,8 @@
                 </div>
               ) : clients.length === 0 ? (
                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                  <Users />
-                  <h2 className="text-2xl font-bold text-slate-800 mb-2 mt-4">
+                  <Icon name="Users" size={64} className="mx-auto text-slate-300 mb-4" />
+                  <h2 className="text-2xl font-bold text-slate-800 mb-2">
                     Nenhum cliente cadastrado
                   </h2>
                   <p className="text-slate-600 mb-6">
@@ -286,9 +304,9 @@
                       resetForm();
                       setCurrentView('new');
                     }}
-                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors mx-auto"
                   >
-                    <UserPlus />
+                    <Icon name="UserPlus" size={20} />
                     Adicionar Cliente
                   </button>
                 </div>
@@ -355,7 +373,7 @@
                             onClick={() => deleteClient(client.id)}
                             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
                           >
-                            <Trash2 />
+                            <Icon name="Trash2" size={18} />
                           </button>
                         </div>
                       </div>
@@ -380,7 +398,7 @@
                   }}
                   className="text-slate-600 hover:text-slate-800"
                 >
-                  <ArrowLeft />
+                  <Icon name="ArrowLeft" size={24} />
                 </button>
                 <div>
                   <h1 className="text-4xl font-bold text-slate-800 mb-2">
@@ -472,7 +490,7 @@
                 onClick={saveClient}
                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
               >
-                <Save />
+                <Icon name="Save" size={20} />
                 Salvar Cliente
               </button>
             </div>
@@ -484,7 +502,7 @@
                   style={{ backgroundColor: calculations.statusColor }}
                 >
                   <div className="flex items-center gap-4">
-                    <AlertCircle />
+                    <Icon name="AlertCircle" size={48} />
                     <div className="flex-1">
                       <h3 className="text-2xl font-bold mb-1">
                         Status: {calculations.status.toUpperCase()}
@@ -504,7 +522,7 @@
                   <div className="bg-white rounded-2xl shadow-lg p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-slate-600 font-semibold">Total de Dívidas</span>
-                      <TrendingUp />
+                      <Icon name="TrendingUp" size={24} color="#ef4444" />
                     </div>
                     <div className="text-3xl font-bold text-slate-800">
                       {formatCurrency(calculations.totalDebts)}
@@ -514,7 +532,7 @@
                   <div className="bg-white rounded-2xl shadow-lg p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-slate-600 font-semibold">Renda Restante</span>
-                      <DollarSign />
+                      <Icon name="DollarSign" size={24} color={calculations.remainingIncome >= 0 ? '#10b981' : '#ef4444'} />
                     </div>
                     <div className={`text-3xl font-bold ${calculations.remainingIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {formatCurrency(calculations.remainingIncome)}
@@ -524,7 +542,7 @@
                   <div className="bg-white rounded-2xl shadow-lg p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-slate-600 font-semibold">Comprometimento</span>
-                      <TrendingDown />
+                      <Icon name="TrendingDown" size={24} color="#3b82f6" />
                     </div>
                     <div className="text-3xl font-bold text-slate-800">
                       {calculations.commitmentRatio.toFixed(1)}%
@@ -632,7 +650,8 @@
       );
     };
 
-    ReactDOM.render(<DebtDashboard />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DebtDashboard />);
   </script>
 </body>
 </html>
